@@ -1,4 +1,3 @@
-<%@ page import="model.Data" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
 <html>
@@ -11,9 +10,8 @@
 <body>
 <h1>${question}</h1>
 <form action="game" method="post">
-    <input type="hidden" name="questionId" value="${questionId}"/>
-    <button type="submit" name="action" value="${answer_1_id}">${answer_1}</button>
-    <button type="submit" name="action" value="${answer_2_id}">${answer_2}</button>
+    <button type="submit" name="action" value="${answer1id}">${answer1}</button>
+    <button type="submit" name="action" value="${answer2id}">${answer2}</button>
 </form>
 <p>
     <form>
