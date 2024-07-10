@@ -5,7 +5,7 @@
     <title>Добро пожаловать!</title>
 </head>
 <body>
-<h2>Добро пожаловать, путник!</h2>
+<h1>Добро пожаловать!</h1>
 <form action="game" method="get">
     <button type="submit">Отправиться в путешествие</button>
 </form>

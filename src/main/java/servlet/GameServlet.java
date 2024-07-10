@@ -5,6 +5,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import model.Data;
 import model.Question;
 import service.QuestionService;
@@ -14,10 +15,30 @@ import java.net.URISyntaxException;
 
 @WebServlet(name = "GameServlet", value = "/game")
 public class GameServlet extends HttpServlet {
+    Integer numberOfGames;
+    Integer numberOfWins;
+    Integer numberOfLose;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         QuestionService questionService = new QuestionService();
+
+        HttpSession session = req.getSession();
+        numberOfGames = (Integer) session.getAttribute("numberOfGames");
+        numberOfWins = (Integer) session.getAttribute("numberOfWins");
+        numberOfLose = (Integer) session.getAttribute("numberOfLose");
+        if (numberOfGames == null) {
+            numberOfGames = 0;
+            session.setAttribute("numberOfGames", numberOfGames);
+        }
+        if (numberOfWins == null) {
+            numberOfWins = 0;
+            session.setAttribute("numberOfWins", numberOfWins);
+        }
+        if (numberOfLose == null) {
+            numberOfLose = 0;
+            session.setAttribute("numberOfLose", numberOfLose);
+        }
 
         try {
             Data data = questionService.readFromFile();
@@ -39,24 +60,38 @@ public class GameServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         QuestionService questionService = new QuestionService();
-
+        HttpSession session = req.getSession();
         try {
             Data data = questionService.readFromFile();
             int questionId = Integer.parseInt(req.getParameter("questionId"));
             int answerId = Integer.parseInt(req.getParameter("action"));
-            Question question = data.questions.stream().filter(q -> q.getId() == questionId).findFirst().orElse(null);
-            int nextQuestionId = data.answers.stream().filter(a -> a.getId() == answerId).findFirst().orElse(null).getQuestion();
+            Question question = data.questions.stream().filter(q -> q.getId() == questionId)
+                    .findFirst()
+                    .orElse(null);
+            int nextQuestionId = data.answers.stream().filter(a -> a.getId() == answerId)
+                    .findFirst()
+                    .orElse(null).getQuestion();
 
             if (nextQuestionId == 0 || question == null || question.isFailed()) {
                 req.setAttribute("result", "Поражение");
                 req.getRequestDispatcher("/result.jsp").forward(req, resp);
             } else {
-                Question nextQuestion = data.questions.stream().filter(q -> q.getId() == nextQuestionId).findFirst().orElse(null);
+                Question nextQuestion = data.questions.stream().filter(q -> q.getId() == nextQuestionId)
+                        .findFirst()
+                        .orElse(null);
                 if (nextQuestion.isFailed()) {
                     req.setAttribute("result", "Поражение");
+                    numberOfGames++;
+                    numberOfLose++;
+                    session.setAttribute("numberOfGames", numberOfGames);
+                    session.setAttribute("numberOfLose", numberOfLose);
                     req.getRequestDispatcher("/result.jsp").forward(req, resp);
-                } else if (nextQuestion.getSuccess()) {
-                    req.setAttribute("result", "Победа");
+                } else if (nextQuestion.isSuccess()) {
+                    req.setAttribute("result", "Тебя вернули домой. Победа");
+                    numberOfGames++;
+                    numberOfWins++;
+                    session.setAttribute("numberOfGames", numberOfGames);
+                    session.setAttribute("numberOfWins", numberOfWins);
                     req.getRequestDispatcher("/result.jsp").forward(req, resp);
                 } else {
                     req.setAttribute("questionId", nextQuestion.getId());
@@ -69,7 +104,7 @@ public class GameServlet extends HttpServlet {
                     req.getRequestDispatcher("/game.jsp").forward(req, resp);
                 }
             }
-        } catch (URISyntaxException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

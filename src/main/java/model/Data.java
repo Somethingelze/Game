@@ -2,11 +2,11 @@ package model;
 
 import java.util.List;
 
+@lombok.Data
 public class Data {
-    private List<Question> questions;
-    private List<Answer> answers;
+    public List<Question> questions;
+    public List<Answer> answers;
 
-    // Геттеры и сеттеры
     public List<Question> getQuestions() {
         return questions;
     }
