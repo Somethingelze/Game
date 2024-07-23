@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,7 +7,7 @@
 <body>
 <h1>Добро пожаловать!</h1>
 <form action="game" method="get">
-    <button type="submit">Отправиться в путешествие</button>
+    <button type="submit">Отправиться в путешествие!</button>
 </form>
 </body>
 </html>
